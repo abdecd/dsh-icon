@@ -1,0 +1,71 @@
+{
+  "name": "dsh-icon",
+  "description": "DeepSeek Harness plugin: expand sidebar button on new empty session and animated running icon on browser tab",
+  "version": "0.1.0",
+  "type": "module",
+  "main": "./index.mjs",
+  "exports": {
+    ".": "./index.mjs",
+    "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.mjs",
+    "client.js",
+    "client.js.map",
+    "cordis.patch.yml",
+    "README.md",
+    "LICENSE"
+  ],
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "inject": [
+        "@deepseek-ai/dsh-client-ui-slots",
+        "@deepseek-ai/dsh-api-session-controller",
+        "@deepseek-ai/dsh-client-ui-conversation",
+        "@deepseek-ai/dsh-client-ui-layout"
+      ]
+    }
+  },
+  "scripts": {
+    "build": "node ./scripts/build.mjs",
+    "prepublishOnly": "npm run build",
+    "typecheck": "tsc -p tsconfig.json"
+  },
+  "keywords": [
+    "deepseek-harness",
+    "dsh",
+    "plugin",
+    "sidebar",
+    "favicon",
+    "running"
+  ],
+  "license": "MIT",
+  "devDependencies": {
+    "@deepseek-ai/cordis": "4.0.2",
+    "@deepseek-ai/dsh-api-session-controller": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-store": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-conversation": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-layout": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-primitives": "0.1.0-rc.7",
+    "@deepseek-ai/dsh-client-ui-sidebar-right": "0.1.5-rc.2",
+    "@deepseek-ai/dsh-client-ui-slots": "0.1.5-rc.2",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "lightningcss": "^1.32.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "tsdown": "^0.22.2",
+    "typescript": "^6.0.3"
+  },
+  "peerDependencies": {
+    "@deepseek-ai/cordis": "^4.0.1",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0"
+  }
+}
