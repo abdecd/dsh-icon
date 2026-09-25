@@ -316,11 +316,12 @@ window.__ModuleLoader__.load({
 			check() {
 				let running = false;
 				const listSnapshot = this.ctx.sessions?.list?.getSnapshot?.();
-				if (listSnapshot?.byId) running = Object.values(listSnapshot.byId).some((s) => s.running === true);
-				if (!running && listSnapshot?.current) {
-					if ((this.ctx.sessions?.binding?.(listSnapshot.current))?.snapshot?.getSnapshot?.()?.running === true) running = true;
+				const hasSessionState = listSnapshot?.byId !== void 0;
+				if (hasSessionState) running = Object.values(listSnapshot.byId).some((s) => s.running === true);
+				if (!hasSessionState && !running && listSnapshot?.current) {
+					if ((this.ctx.sessions?.binding?.(listSnapshot.current))?.session?.getSnapshot?.()?.running === true) running = true;
 				}
-				if (!running && typeof document !== "undefined") {
+				if (!hasSessionState && !running && typeof document !== "undefined") {
 					if (document.querySelector("[data-stop-button], button[aria-label*=\"Stop\"], button[aria-label*=\"停止\"], [data-session-running=\"true\"]") !== null) running = true;
 				}
 				this.updateRunning(running);

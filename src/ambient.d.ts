@@ -41,11 +41,12 @@ declare module '@deepseek-ai/cordis' {
         subscribe(callback: () => void): () => void
       }
       binding?(sessionId: string): {
-        snapshot?: {
-          getSnapshot?(): {
+        session?: {
+          getSnapshot(): {
             running?: boolean
             [key: string]: any
           }
+          subscribe?(callback: () => void): () => void
         }
         [key: string]: any
       }

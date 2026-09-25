@@ -178,20 +178,22 @@ export class FaviconRunningManager {
 
     // 1. Check authoritative session store
     const listSnapshot = this.ctx.sessions?.list?.getSnapshot?.()
-    if (listSnapshot?.byId) {
+    const hasSessionState = listSnapshot?.byId !== undefined
+    if (hasSessionState) {
       running = Object.values(listSnapshot.byId).some((s: any) => s.running === true)
     }
 
     // 2. Check current session snapshot
-    if (!running && listSnapshot?.current) {
+    if (!hasSessionState && !running && listSnapshot?.current) {
       const binding = this.ctx.sessions?.binding?.(listSnapshot.current)
-      if (binding?.snapshot?.getSnapshot?.()?.running === true) {
+      if (binding?.session?.getSnapshot?.()?.running === true) {
         running = true
       }
     }
 
-    // 3. Fallback: inspect DOM indicators (e.g. stop button in input bar)
-    if (!running && typeof document !== 'undefined') {
+    // 3. Only fall back to DOM when the authoritative store is unavailable.
+    // Stop buttons can remain mounted while hidden after a run has finished.
+    if (!hasSessionState && !running && typeof document !== 'undefined') {
       if (
         document.querySelector(
           '[data-stop-button], button[aria-label*="Stop"], button[aria-label*="停止"], [data-session-running="true"]'
