@@ -40,10 +40,17 @@ const WHALE_PATH_D =
   '21.7197C29.5259 22.0161 30.0615 22.5601 30.834 23.3281C31.6216 24.2559 31.7632 24.5117 32.2124 ' +
   '25.208C32.5669 25.752 32.8901 26.312 33.1104 26.9521C33.2446 27.3521 33.0713 27.6802 32.6064 27.8799Z'
 
+interface FaviconLinkSnapshot {
+  rel: string
+  href: string
+  type?: string | undefined
+  media?: string | undefined
+  sizes?: string | undefined
+}
+
 export class FaviconRunningManager {
   private ctx: Context
-  private originalFaviconHref: string | null = null
-  private originalFaviconType: string = 'image/svg+xml'
+  private originalFavicons: FaviconLinkSnapshot[] = []
   private isRunning: boolean = false
   private canvas: HTMLCanvasElement | null = null
   private whalePath: Path2D | null = null
@@ -77,23 +84,94 @@ export class FaviconRunningManager {
 
   private saveOriginalFavicon() {
     if (typeof document === 'undefined') return
-    const link = document.querySelector<HTMLLinkElement>("link[rel*='icon']")
-    if (link && link.href) {
-      this.originalFaviconHref = link.getAttribute('href') || link.href
-      this.originalFaviconType = link.type || 'image/svg+xml'
-    } else {
-      this.originalFaviconHref = './favicon.svg'
-      this.originalFaviconType = 'image/svg+xml'
+    const links = Array.from(document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']"))
+    const validLinks = links.filter((link) => {
+      const href = link.getAttribute('href') || link.href
+      return href && !href.startsWith('data:')
+    })
+
+    if (validLinks.length > 0) {
+      this.originalFavicons = validLinks.map((link) => ({
+        rel: link.getAttribute('rel') || 'icon',
+        href: link.getAttribute('href') || link.href,
+        type: link.getAttribute('type') || undefined,
+        media: link.getAttribute('media') || undefined,
+        sizes: link.getAttribute('sizes') || undefined,
+      }))
+    } else if (this.originalFavicons.length === 0) {
+      this.originalFavicons = [
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: './favicon-dark.svg',
+          media: '(prefers-color-scheme: dark)',
+        },
+        {
+          rel: 'icon',
+          type: 'image/svg+xml',
+          href: './favicon.svg',
+          media: '(prefers-color-scheme: light)',
+        },
+      ]
     }
   }
 
   private restoreOriginalFavicon() {
-    if (typeof document === 'undefined' || !this.originalFaviconHref) return
-    const links = document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']")
-    if (links.length > 0) {
-      links.forEach((link) => {
-        link.href = this.originalFaviconHref!
-        link.type = this.originalFaviconType
+    if (typeof document === 'undefined') return
+    const targetSnapshots =
+      this.originalFavicons.length > 0
+        ? this.originalFavicons
+        : [
+            {
+              rel: 'icon',
+              type: 'image/svg+xml',
+              href: './favicon-dark.svg',
+              media: '(prefers-color-scheme: dark)',
+            },
+            {
+              rel: 'icon',
+              type: 'image/svg+xml',
+              href: './favicon.svg',
+              media: '(prefers-color-scheme: light)',
+            },
+          ]
+
+    const currentLinks = Array.from(
+      document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']")
+    )
+
+    if (currentLinks.length === targetSnapshots.length) {
+      currentLinks.forEach((link, idx) => {
+        const snap = targetSnapshots[idx]
+        if (!snap) return
+        link.rel = snap.rel
+        link.href = snap.href
+        if (snap.type) {
+          link.setAttribute('type', snap.type)
+        } else {
+          link.removeAttribute('type')
+        }
+        if (snap.media) {
+          link.setAttribute('media', snap.media)
+        } else {
+          link.removeAttribute('media')
+        }
+        if (snap.sizes) {
+          link.setAttribute('sizes', snap.sizes)
+        } else {
+          link.removeAttribute('sizes')
+        }
+      })
+    } else {
+      currentLinks.forEach((l) => l.remove())
+      targetSnapshots.forEach((snap) => {
+        const link = document.createElement('link')
+        link.rel = snap.rel
+        link.href = snap.href
+        if (snap.type) link.setAttribute('type', snap.type)
+        if (snap.media) link.setAttribute('media', snap.media)
+        if (snap.sizes) link.setAttribute('sizes', snap.sizes)
+        document.head.appendChild(link)
       })
     }
   }
