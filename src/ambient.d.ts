@@ -4,6 +4,8 @@ declare module '@deepseek-ai/dsh-client-ui-primitives' {
     size?: number
     className?: string
   }
+  export const IconPanelLeftOutlineRegular: ComponentType<IconProps>
+  export const IconPanelLeftOutlineMedium: ComponentType<IconProps>
   export const IconPanelLeftOutline16: ComponentType<IconProps>
   export interface TooltipProps {
     label: ReactNode

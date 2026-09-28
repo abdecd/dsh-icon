@@ -183,7 +183,7 @@ window.__ModuleLoader__.load({
 				"data-sidebar-right-expand": "true",
 				"data-dsh-icon-hero": "true",
 				onClick: handleExpand,
-				children: typeof _deepseek_ai_dsh_client_ui_primitives.IconPanelLeftOutline16 !== "undefined" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconPanelLeftOutline16, { size: 16 }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FallbackPanelIcon, {})
+				children: typeof _deepseek_ai_dsh_client_ui_primitives.IconPanelLeftOutlineRegular !== "undefined" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.IconPanelLeftOutlineRegular, { size: 16 }) : /* @__PURE__ */ (0, react_jsx_runtime.jsx)(FallbackPanelIcon, {})
 			});
 			const content = typeof _deepseek_ai_dsh_client_ui_primitives.Tooltip !== "undefined" ? /* @__PURE__ */ (0, react_jsx_runtime.jsx)(_deepseek_ai_dsh_client_ui_primitives.Tooltip, {
 				label,

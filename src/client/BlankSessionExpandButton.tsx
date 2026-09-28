@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { createPortal } from 'react-dom'
 import type { Context } from '@deepseek-ai/cordis'
-import { Tooltip, IconPanelLeftOutline16 } from '@deepseek-ai/dsh-client-ui-primitives'
+import { Tooltip, IconPanelLeftOutlineRegular } from '@deepseek-ai/dsh-client-ui-primitives'
 
 const CSS_TAG_ID = 'dsh-icon:hero-expand-button-styles'
 
@@ -208,8 +208,8 @@ export function BlankSessionExpandButton({ ctx }: { ctx: Context }) {
       data-dsh-icon-hero="true"
       onClick={handleExpand}
     >
-      {typeof IconPanelLeftOutline16 !== 'undefined' ? (
-        <IconPanelLeftOutline16 size={16} />
+      {typeof IconPanelLeftOutlineRegular !== 'undefined' ? (
+        <IconPanelLeftOutlineRegular size={16} />
       ) : (
         <FallbackPanelIcon />
       )}
