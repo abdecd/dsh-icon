@@ -3,7 +3,7 @@ import type { Context } from '@deepseek-ai/cordis'
 import { BlankSessionExpandButton } from './BlankSessionExpandButton.tsx'
 import { FaviconRunningManager } from './favicon-running.ts'
 
-export const inject = ['slots', 'sessions']
+export const inject = ['slots', 'sessions', 'uiSession', 'sidebarRight', 'locale']
 
 export function apply(ctx: Context): void {
   // Feature 1: Top-right sidebar expand button on new blank sessions

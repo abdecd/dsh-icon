@@ -1,4 +1,5 @@
 import type { Context } from '@deepseek-ai/cordis'
+import { isAnySessionRunning } from './helpers.ts'
 
 /**
  * The exact DeepSeek whale SVG path d from favicon.svg (viewBox 0 0 50 50).
@@ -227,10 +228,25 @@ export class FaviconRunningManager {
   }
 
   private setupSubscriptions() {
-    // 1. Subscribe to sessions state
-    this.disposeSessionsSub = this.ctx.sessions?.list?.subscribe?.(() => {
+    // 1. Subscribe to sessions list state
+    const unsubSessions = this.ctx.sessions?.list?.subscribe?.(() => {
       this.check()
     })
+
+    // 1b. Subscribe to uiSession adapter and sessionStatus if available
+    const uiSession = this.ctx.uiSession ?? this.ctx.get?.('uiSession')
+    const unsubUiSession = uiSession?.adapter?.current?.subscribe?.(() => {
+      this.check()
+    })
+    const unsubSessionStatus = uiSession?.sessionStatus?.subscribe?.(() => {
+      this.check()
+    })
+
+    this.disposeSessionsSub = () => {
+      unsubSessions?.()
+      unsubUiSession?.()
+      unsubSessionStatus?.()
+    }
 
     // 2. DOM MutationObserver as robust backup
     if (typeof MutationObserver !== 'undefined' && typeof document !== 'undefined') {
@@ -252,26 +268,11 @@ export class FaviconRunningManager {
   }
 
   private check() {
-    let running = false
+    let running = isAnySessionRunning(this.ctx)
 
-    // 1. Check authoritative session store
-    const listSnapshot = this.ctx.sessions?.list?.getSnapshot?.()
-    const hasSessionState = listSnapshot?.byId !== undefined
-    if (hasSessionState) {
-      running = Object.values(listSnapshot.byId).some((s: any) => s.running === true)
-    }
-
-    // 2. Check current session snapshot
-    if (!hasSessionState && !running && listSnapshot?.current) {
-      const binding = this.ctx.sessions?.binding?.(listSnapshot.current)
-      if (binding?.session?.getSnapshot?.()?.running === true) {
-        running = true
-      }
-    }
-
-    // 3. Only fall back to DOM when the authoritative store is unavailable.
+    // Fall back to DOM when the authoritative store is unavailable or session hasn't updated yet.
     // Stop buttons can remain mounted while hidden after a run has finished.
-    if (!hasSessionState && !running && typeof document !== 'undefined') {
+    if (!running && typeof document !== 'undefined') {
       if (
         document.querySelector(
           '[data-stop-button], button[aria-label*="Stop"], button[aria-label*="停止"], [data-session-running="true"]'

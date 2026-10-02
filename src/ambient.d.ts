@@ -1,20 +1,5 @@
-declare module '@deepseek-ai/dsh-client-ui-primitives' {
-  import type { ComponentType, ReactNode } from 'react'
-  export interface IconProps {
-    size?: number
-    className?: string
-  }
-  export const IconPanelLeftOutlineRegular: ComponentType<IconProps>
-  export const IconPanelLeftOutlineMedium: ComponentType<IconProps>
-  export const IconPanelLeftOutline16: ComponentType<IconProps>
-  export interface TooltipProps {
-    label: ReactNode
-    side?: 'top' | 'bottom' | 'left' | 'right'
-    delayMs?: number
-    children: ReactNode
-  }
-  export const Tooltip: ComponentType<TooltipProps>
-}
+import type { ISessions } from '@deepseek-ai/dsh-api-session-controller/client'
+import type { ISidebarRight } from '@deepseek-ai/dsh-client-ui-sidebar-right/client'
 
 declare module '@deepseek-ai/cordis' {
   interface Context {
@@ -26,38 +11,21 @@ declare module '@deepseek-ai/cordis' {
       entries?(name: string): any[]
       subscribe?(name: string, callback: () => void): () => void
     }
-    sessions: {
-      list: {
-        getSnapshot(): {
-          current?: string
-          byId: Record<string, {
-            id: string
-            blank?: boolean
-            running?: boolean
-            title?: string
-            [key: string]: any
-          }>
-          ids: string[]
-          [key: string]: any
-        }
-        subscribe(callback: () => void): () => void
+    sessions?: ISessions
+    uiSession?: {
+      sessionStatus?: {
+        getSnapshot(): ReadonlyMap<string, { running?: boolean; [key: string]: any }>
+        subscribe(listener: () => void): () => void
       }
-      binding?(sessionId: string): {
-        session?: {
-          getSnapshot(): {
-            running?: boolean
-            [key: string]: any
-          }
-          subscribe?(callback: () => void): () => void
+      adapter?: {
+        current?: {
+          getSnapshot(): { key?: string; [key: string]: any }
+          subscribe(listener: () => void): () => void
         }
-        [key: string]: any
       }
-    }
-    sidebarRight?: {
-      isExpanded?(): boolean
-      toggleExpanded?(): void
       [key: string]: any
     }
+    sidebarRight?: ISidebarRight
     locale?: {
       getPreference?(): string
       bind?(namespace: string): (key: string) => string
